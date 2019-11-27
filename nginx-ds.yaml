@@ -4,6 +4,8 @@ metadata:
   labels:
     run: nginx-test
   name: nginx
+  annotations:
+    fluxcd.io/automated: "true"
 spec:
   selector:
     matchLabels:
