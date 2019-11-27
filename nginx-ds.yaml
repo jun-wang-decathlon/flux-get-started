@@ -40,7 +40,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.serviceAccountName
-        image: acrcsz.azurecr.cn/nginx:v1
+        image: nginx
         imagePullPolicy: Always
         lifecycle:
           postStart:
