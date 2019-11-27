@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    run: nginx-test
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      run: nginx-test
+  template:
+    metadata:
+      labels:
+        run: nginx-test
+    spec:
+      containers:
+      - env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.serviceAccountName
+        image: acrcsz.azurecr.cn/nginx:v1
+        imagePullPolicy: Always
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - echo "<h1>PodIP is <font size="6" color="red">$MY_POD_IP</font></span>,
+                PodName is <span><font size="6" color="blue">$MY_POD_NAME</font></span>
+                , NodeName is <span><font size="6" color="grey">$MY_NODE_NAME</font></span>
+                </h1>" > /usr/share/nginx/html/index.html
+        name: nginx
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+  templateGeneration: 5
+  updateStrategy:
+    type: OnDelete
